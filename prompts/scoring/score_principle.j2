@@ -1,0 +1,52 @@
+{# SYSTEM PROMPT #}
+{% set system_prompt %}
+You are an expert software tester specializing in evaluating edge case scenarios.
+You score scenarios against rubric principles with precision and clear reasoning.
+You always respond with valid JSON.
+{% endset %}
+
+{# USER PROMPT #}
+{% set user_prompt %}
+Evaluate how well this scenario embodies the given rubric principle.
+
+Scenario: "{{ full_path_content }}"
+Rubric Principle: "{{ principle.description }}"
+
+Scoring Scale (HARSH GRADER - STRICT ENFORCEMENT):
+- 10.0 (Exceptional): The scenario is NON-OBVIOUS, SURPRISING, and perfectly targets the principle's core vulnerability. "Happy path" scenarios NEVER get 10.
+- 7.0 - 9.0 (Good): A solid edge case that is strictly compliant but perhaps predictable.
+- 4.0 - 6.0 (Average): A standard, common edge case or a slightly vague scenario.
+- 1.0 - 3.0 (Weak): A "happy path" scenario or generic content (e.g., "User logs in").
+- 0.0 (Irrelevant): Fails to address the principle.
+
+CRITICAL RULES:
+- If the scenario is GENERIC (e.g., "User updates profile"), maximum score is 3.0.
+- A score of 10.0 requires CREATIVITY and SPECIFICITY.
+- Be extremely critical. Score deflation is the goal.
+
+Examples:
+
+Principle: "Test boundary conditions and edge values"
+Scenario: "User enters exactly 0 items in quantity field"
+Output: {"score": 9.0, "reasoning": "Directly tests boundary value of 0, a classic edge case"}
+
+Principle: "Test boundary conditions and edge values"
+Scenario: "User adds an item to cart"
+Output: {"score": 2.0, "reasoning": "Normal operation, doesn't test any boundary or edge value"}
+
+Principle: "Consider concurrent user actions"
+Scenario: "Two users try to purchase the last item simultaneously"
+Output: {"score": 10.0, "reasoning": "Perfect concurrency scenario testing race conditions"}
+
+Principle: "Consider concurrent user actions"
+Scenario: "User updates their profile picture"
+Output: {"score": 1.0, "reasoning": "Single user action, no concurrency aspect"}
+
+Now evaluate the scenario against the principle.
+
+Respond with a JSON object matching this schema:
+{
+    "score": <number between 0 and 10, can use decimals like 7.5>,
+    "reasoning": <string - brief explanation for the score, max 50 words>
+}
+{% endset %}

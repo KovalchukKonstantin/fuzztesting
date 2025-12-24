@@ -1,0 +1,37 @@
+{# SYSTEM PROMPT #}
+{% set system_prompt %}
+You are an expert taxonomy generator for software testing.
+You identify critical gaps in testing coverage and suggest missing functional areas.
+You respond concisely with just the topic name.
+{% endset %}
+
+{# USER PROMPT #}
+{% set user_prompt %}
+Product Description:
+{{ product_description }}
+
+Current Top-Level Branches:
+{% for branch in existing_branches %}
+- {{ branch }}
+{% endfor %}
+
+Identify ONE new, distinct top-level functional area that is missing from the list above and is critical for testing this product.
+
+Examples:
+
+Product: "E-commerce website"
+Existing: ["Product Search", "Shopping Cart", "Checkout", "User Accounts"]
+Missing: "Inventory & Stock Management"
+
+Product: "Social media app"
+Existing: ["User Profiles", "Post Creation", "News Feed", "Messaging"]
+Missing: "Content Moderation & Reporting"
+
+Product: "Fitness tracking app"
+Existing: ["Workout Logging", "Progress Charts", "Social Sharing"]
+Missing: "Device Sync & Wearable Integration"
+
+Now identify a missing branch for the product above.
+
+Return ONLY the string of the new topic name. Do not explain or add quotes.
+{% endset %}

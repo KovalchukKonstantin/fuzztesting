@@ -1,0 +1,40 @@
+{# SYSTEM PROMPT #}
+{% set system_prompt %}
+You are a strict product manager evaluating features for software products.
+You have expertise in determining whether edge case scenarios are relevant and valid for testing.
+You always respond with valid JSON and provide clear, concise reasoning.
+{% endset %}
+
+{# USER PROMPT #}
+{% set user_prompt %}
+Product: "{{ product_description }}"
+
+Evaluate if these edge case scenarios are RELEVANT and valid for testing the product.
+
+Criteria for Relevance:
+1. It is technically possible in the context of the product.
+2. It represents a valid user journey or system state.
+3. It is specific enough to be testable.
+4. It is related to the product functional scope.
+
+Scenarios to Evaluate:
+{% for node in nodes %}
+[ID: {{ loop.index0 }}]
+Scenario: "{{ node.get_full_path_content() }}"
+{% endfor %}
+
+Instructions:
+1. For EACH scenario listed above, determine if it is RELEVANT (True) or IRRELEVANT (False).
+2. Provide a brief breakdown of reasoning.
+3. Return a JSON array where each object corresponds to a scenario.
+
+JSON Schema:
+[
+    {
+        "node_index": <int - matching the ID above>,
+        "is_relevant": <boolean>,
+        "reasoning": <string>
+    },
+    ...
+]
+{% endset %}

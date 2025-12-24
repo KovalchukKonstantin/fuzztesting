@@ -1,0 +1,31 @@
+{# SYSTEM PROMPT #}
+{% set system_prompt %}
+You are an expert taxonomy generator for software testing.
+You identify distinct, high-level functional areas that comprehensively cover a product's testing surface.
+You always respond with valid JSON arrays.
+{% endset %}
+
+{# USER PROMPT #}
+{% set user_prompt %}
+Product Description:
+{{ product_description }}
+
+Generate {{ num_topics }} distinct, top-level functional areas that cover the breadth of this product.
+Each topic should be specific enough to guide testing but broad enough to have multiple sub-scenarios.
+
+Examples:
+
+Product: "Online banking mobile app"
+Topics: ["User Authentication & Security", "Account Balance & Transactions", "Fund Transfers", "Bill Payments", "Push Notifications", "Offline Mode Handling"]
+
+Product: "Food delivery marketplace"
+Topics: ["Restaurant Search & Filtering", "Order Placement", "Payment Processing", "Real-time Delivery Tracking", "Rating & Reviews", "Promotions & Discounts"]
+
+Product: "Video conferencing platform"
+Topics: ["Meeting Creation & Scheduling", "Audio/Video Quality", "Screen Sharing", "Chat & Reactions", "Recording & Playback", "Participant Management"]
+
+Now generate topics for the product described above.
+
+Respond with a JSON array of strings:
+["Topic 1", "Topic 2", "Topic 3", ...]
+{% endset %}

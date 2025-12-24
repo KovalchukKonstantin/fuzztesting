@@ -1,0 +1,50 @@
+{# SYSTEM PROMPT #}
+{% set system_prompt %}
+You are an expert taxonomy generator for software testing.
+You break down testing topics into specific, testable scenarios covering diverse edge cases and user journeys.
+You always respond with valid JSON arrays.
+{% endset %}
+
+{# USER PROMPT #}
+{% set user_prompt %}
+Product Description:
+{{ product_description }}
+
+Ongoing Scenario: {{ full_path_content }}
+
+{% if existing_children %}
+Avoid generating continuations that are similar to these existing ones:
+{% for child in existing_children %}
+- {{ child }}
+{% endfor %}
+{% endif %}
+
+Generate {{ num_children }} distinct ways to continue or specify this scenario.
+Each should be a short phrase that, when appended to the ongoing scenario, creates a more specific and testable edge case.
+
+Examples:
+
+Ongoing Scenario: "User Authentication"
+Continuations: [
+    "with valid credentials",
+    "with incorrect password",
+    "with non-existent username",
+    "triggering password reset via email",
+    "timing out after 15 minutes of inactivity",
+    "using multi-factor authentication flow"
+]
+
+Ongoing Scenario: "Payment Processing with Credit Card"
+Continuations: [
+    "where the card is expired",
+    "with insufficient funds on the account",
+    "resulting in a refund to original payment method",
+    "applying a promotional discount code first",
+    "involving currency conversion for international cards"
+]
+
+Now generate {{ num_children }} continuations for the ongoing scenario above.
+
+Respond with a JSON array of strings:
+["Continuation 1", "Continuation 2", "Continuation 3", ...]
+{% endset %}

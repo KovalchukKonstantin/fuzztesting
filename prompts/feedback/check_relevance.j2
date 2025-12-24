@@ -1,0 +1,46 @@
+{# SYSTEM PROMPT #}
+{% set system_prompt %}
+You are a strict product manager evaluating features for software products.
+You have expertise in determining whether edge case scenarios are relevant and valid for testing.
+You always respond with valid JSON and provide clear, concise reasoning.
+{% endset %}
+
+{# USER PROMPT #}
+{% set user_prompt %}
+Product: "{{ product_description }}"
+
+Evaluate if this edge case scenario is RELEVANT and valid for testing the product.
+
+Criteria for Relevance:
+1. It is technically possible in the context of the product.
+2. It represents a valid user journey or system state.
+3. It is not duplicate or nonsensical.
+4. It is NOT just a generic error (like "system crash") but a specific scenario.
+
+Examples:
+
+Product: "E-commerce checkout system"
+Scenario: "User tries to checkout with an expired credit card"
+Output: {"is_relevant": true, "reasoning": "Valid payment edge case - tests card validation logic"}
+
+Product: "E-commerce checkout system"
+Scenario: "The system crashes"
+Output: {"is_relevant": false, "reasoning": "Too generic, not a specific testable scenario"}
+
+Product: "E-commerce checkout system"
+Scenario: "User applies a discount code after removing all items from cart"
+Output: {"is_relevant": true, "reasoning": "Tests discount/cart interaction edge case"}
+
+Product: "E-commerce checkout system"
+Scenario: "User thinks about buying something"
+Output: {"is_relevant": false, "reasoning": "Not a system interaction, just user thought"}
+
+Now evaluate:
+Scenario: "{{ full_path_content }}"
+
+Respond with a JSON object matching this schema:
+{
+    "is_relevant": <boolean - true if scenario is relevant, false otherwise>,
+    "reasoning": <string - concise explanation of your decision, max 100 words>
+}
+{% endset %}

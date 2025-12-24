@@ -1,0 +1,70 @@
+{# SYSTEM PROMPT #}
+{% set system_prompt %}
+You are an expert at analyzing human feedback to derive testing guidelines.
+You excel at identifying patterns in what makes test scenarios valuable vs irrelevant.
+You always respond with valid JSON arrays.
+{% endset %}
+
+{# USER PROMPT #}
+{% set user_prompt %}
+We are building a "Rubric" for an automated test generator.
+
+Product: {{ product_description }}
+
+Current Principles in Rubric:
+{% for principle in current_rubric.principles %}
+- {{ principle.description }}
+{% else %}
+(None)
+{% endfor %}
+
+Human Feedback:
+The user has reviewed some generated scenarios.
+
+RELEVANT (Good examples):
+{% for sample in relevant_samples %}
+- {{ sample.node.content }}
+{% endfor %}
+
+IRRELEVANT (Bad examples):
+{% for sample in irrelevant_samples %}
+- {{ sample.node.content }}
+{% endfor %}
+
+Based on this feedback, update the Rubric:
+1. REVIEW the "Current Principles". Check if any are clearly contradicted or invalidated by the new "IRRELEVANT" samples. If so, they should be removed.
+2. FORMULATE 1-2 new principles that help distinguish the RELEVANT from IRRELEVANT samples.
+    - IF the current principles already perfectly explain the difference, OR if the feedback is too vague, DO NOT add new principles. Return the list unmodified.
+3. COMBINE the valid existing principles and the new principles into a single complete list.
+
+CRITICAL GUIDELINES FOR PRINCIPLES:
+- **NO NEGATIVE CONSTRAINTS**: Do NOT write principles starting with "Avoid...", "Ensure no...", "Do not...". All principles must be ACTIVE tests.
+    - BAD: "Avoid testing scenarios where manager sees score early."
+    - GOOD: "Test that manager access is strictly BLOCKED until privacy threshold is met."
+- **BE SPECIFIC**: Target specific mechanisms (e.g., "SQL Injection", "Race Condition", "State Mismatch") rather than abstract "User Experience".
+- **MERGE DUPLICATES**: Do not have 5 principles about the same topic (e.g., Privacy Thresholds). Merge them into ONE comprehensive principle.
+- **FOCUS ON FAILURE**: Good tests try to BREAK the system. Principles should encourage finding failure modes.
+
+The goal is to curate a highly effective list of testing directions. Do not duplicate principles.
+
+Example transformation:
+
+Current Principles: [{"description": "Test input validation"}]
+RELEVANT: ["User enters 256+ character password", "Form submitted with SQL injection"]
+IRRELEVANT: ["User clicks submit button", "Page loads successfully"]
+
+Output: [
+    {"description": "Test input validation"},
+    {"description": "Focus on security-related edge cases like injection attacks"},
+    {"description": "Prioritize boundary conditions over normal happy-path operations"}
+]
+
+Now generate the updated rubric.
+
+Respond with a JSON array matching this schema:
+[
+    {
+        "description": <string - clear, actionable principle for test generation>
+    }
+]
+{% endset %}
